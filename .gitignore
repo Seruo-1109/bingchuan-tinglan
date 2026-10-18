@@ -1,0 +1,38 @@
+# ── 构建产物 ────────────────────────────────────────────────
+build/
+packaging/payload/
+packaging/dist/
+packaging/_tools/
+packaging/installer/payload-fingerprint.nsh
+
+# ── 第三方工具链（不入库，见 docs/BUILD.md）──────────────────
+_tools/
+
+# ── 运行期文件 ──────────────────────────────────────────────
+*.log
+*.pdb
+*.user
+*.cache
+settings.json
+crash.log
+*.testbak
+
+# ── 测试 / 探针输出 ────────────────────────────────────────
+tests/out/
+*.sha256.tmp
+probe_*.txt
+*_report.txt
+
+# ── 编辑器 / 系统 ──────────────────────────────────────────
+.vs/
+.vscode/
+.idea/
+*.suo
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# ── 临时文件 ───────────────────────────────────────────────
+*.bak
+*.bak-*
+*~

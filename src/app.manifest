@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<assembly manifestVersion="1.0" xmlns="urn:schemas-microsoft-com:asm.v1">
+  <assemblyIdentity version="1.0.0.0" name="MultiAudioOutput.app" type="win32"/>
+
+  <!--
+    asInvoker is NOT optional. csc's default manifest already requests it; the moment
+    we supply our own manifest we take over that responsibility, and omitting it makes
+    Windows apply UAC file/registry virtualisation to the process (writes silently get
+    redirected to the VirtualStore, settings look like they "do not save").
+  -->
+  <trustInfo xmlns="urn:schemas-microsoft-com:asm.v2">
+    <security>
+      <requestedPrivileges xmlns="urn:schemas-microsoft-com:asm.v3">
+        <requestedExecutionLevel level="asInvoker" uiAccess="false"/>
+      </requestedPrivileges>
+    </security>
+  </trustInfo>
+
+  <compatibility xmlns="urn:schemas-microsoft-com:compatibility.v1">
+    <application>
+      <!-- Windows 10 / 11 -->
+      <supportedOS Id="{8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a}"/>
+      <!-- Windows 8.1 -->
+      <supportedOS Id="{1f676c76-80e1-4239-95bb-83d0f6d0da78}"/>
+      <!-- Windows 8 -->
+      <supportedOS Id="{4a2f28e3-53b9-4441-ba9c-d69d4a4a6e38}"/>
+      <!-- Windows 7 -->
+      <supportedOS Id="{35138b9a-5d96-4fbd-8e2d-a2440225f93a}"/>
+    </application>
+  </compatibility>
+
+  <!--
+    DPI awareness.
+
+    Without this the process is DPI UNAWARE, so at 125%/150% Windows bitmap stretches
+    the entire window: ClearType sub pixel hinting is destroyed by the interpolation,
+    thin 1px lines turn grey and fat, and 14px rounded corners get visible stair steps.
+    No amount of TextRenderingHint tuning can fix that layer, because it happens after
+    we have already drawn.
+
+    permonitorv2 is preferred; "true/pm" is the pre Win10 1703 fallback spelling.
+    Windows picks the first one it understands.
+
+    IMPORTANT: this manifest only makes the process DPI AWARE. It does NOT scale
+    anything. All scaling is done in code by Theme.S() + MainForm.OnDpiChanged,
+    because MainForm sets AutoScaleMode = None on purpose (see the comment there:
+    letting WinForms scale too would double apply the factor).
+
+    NOTE: XML comments must never contain a double hyphen. That is a hard XML rule,
+    and violating it produces the SxS error "Invalid Xml syntax" at load time.
+  -->
+  <application xmlns="urn:schemas-microsoft-com:asm.v3">
+    <windowsSettings>
+      <dpiAware xmlns="http://schemas.microsoft.com/SMI/2005/WindowsSettings">true/pm</dpiAware>
+      <dpiAwareness xmlns="http://schemas.microsoft.com/SMI/2016/WindowsSettings">permonitorv2</dpiAwareness>
+    </windowsSettings>
+  </application>
+</assembly>

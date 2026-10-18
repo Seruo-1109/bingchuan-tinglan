@@ -1,0 +1,97 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: 编译并打包
+    runs-on: windows-latest
+
+    steps:
+      - name: 检出
+        uses: actions/checkout@v4
+
+      - name: 检查脚本 BOM
+        shell: pwsh
+        run: |
+          # Windows PowerShell 5.1 读无 BOM 的 .ps1 会按 ANSI 解析，中文全乱。
+          # 这里在 CI 里提前拦住：任何一个 .ps1/.nsi 丢了 BOM 就失败。
+          $bad = @()
+          Get-ChildItem -Recurse -Include *.ps1,*.nsi |
+            Where-Object { $_.FullName -notmatch '\\\.git\\' } |
+            ForEach-Object {
+              $b = [System.IO.File]::ReadAllBytes($_.FullName)
+              $hasBom = $b.Length -ge 3 -and $b[0] -eq 0xEF -and $b[1] -eq 0xBB -and $b[2] -eq 0xBF
+              if (-not $hasBom) { $bad += $_.FullName }
+            }
+          if ($bad.Count -gt 0) {
+            Write-Host "以下脚本缺少 UTF-8 BOM：" -ForegroundColor Red
+            $bad | ForEach-Object { Write-Host "  $_" }
+            exit 1
+          }
+          Write-Host "所有脚本均带 BOM"
+
+      - name: 编译主程序
+        shell: powershell
+        run: .\build.ps1
+
+      - name: 安装 NSIS
+        shell: pwsh
+        run: |
+          choco install nsis -y --no-progress
+          "C:\Program Files (x86)\NSIS" | Out-File -Append -Encoding utf8 $env:GITHUB_PATH
+
+      - name: 打安装包
+        shell: powershell
+        run: |
+          $ver = if ($env:GITHUB_REF -like 'refs/tags/v*') { $env:GITHUB_REF -replace '^refs/tags/v','' } else { '1.2' }
+          .\packaging\build.ps1 -Version $ver -SkipCompile
+
+      - name: 冒烟测试
+        shell: powershell
+        run: |
+          # 只跑不碰音频设备的自检入口，验证 exe 能正常加载依赖并写出报告。
+          $out = Join-Path $env:RUNNER_TEMP 'selftest'
+          New-Item -ItemType Directory -Force -Path $out | Out-Null
+          $p = Start-Process -FilePath '.\build\并川听澜.exe' -ArgumentList @('--selftest', $out) -Wait -PassThru
+          Get-ChildItem $out -ErrorAction SilentlyContinue | ForEach-Object { Write-Host "== $($_.Name)"; Get-Content $_.FullName }
+          if ($p.ExitCode -ne 0) { throw "selftest 退出码 $($p.ExitCode)" }
+
+      - name: 上传产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: bingchuan-tinglan-${{ github.sha }}
+          path: |
+            build/并川听澜.exe
+            build/NAudio.dll
+            packaging/dist/*.exe
+            packaging/dist/*.sha256
+          if-no-files-found: error
+
+      - name: 附加到 Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # gh 在 windows-latest 上预装；tag 推送后自动建 Release 并上传。
+          $tag = $env:GITHUB_REF -replace '^refs/tags/',''
+          $files = Get-ChildItem packaging\dist -Include *.exe,*.sha256 -File
+          if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
+            Write-Host "未找到 gh，跳过自动发布；请在网页上手动创建 Release"
+            exit 0
+          }
+          gh release view $tag 2>$null
+          if ($LASTEXITCODE -ne 0) {
+            gh release create $tag --title "并川听澜 $tag" --generate-notes
+          }
+          foreach ($f in $files) { gh release upload $tag $f.FullName --clobber }

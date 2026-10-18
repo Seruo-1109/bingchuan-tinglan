@@ -1,0 +1,20 @@
+# 统一换行：仓库内保存 LF，检出到 Windows 工作区时转成 CRLF。
+* text=auto eol=crlf
+
+# ── 必须保留 BOM 的脚本 ─────────────────────────────────────
+# Windows PowerShell 5.1 在读取没有 BOM 的 .ps1 时会按系统 ANSI 码页(GBK)解析，
+# 于是文件里所有中文都会变成乱码 —— 本项目大量脚本含中文提示与中文文件名。
+# 因此这些文件既不能转 LF，也不能丢 BOM：eol 固定 crlf，且由 packaging\fixbom.ps1
+# 保证 BOM 存在。修改后请运行该脚本，否则构建脚本会静默乱码。
+*.ps1   text eol=crlf
+*.nsi   text eol=crlf
+
+# C# 源码带 BOM（csc 对 BOM 无要求，但保留可避免编辑器误判编码）。
+*.cs    text eol=crlf
+
+# ── 二进制 ─────────────────────────────────────────────────
+*.dll   binary
+*.exe   binary
+*.ico   binary
+*.png   binary
+*.bmp   binary
