@@ -8,6 +8,11 @@ Windows 自带的声音设置只能选一个默认播放设备；「立体声混
 
 界面是 iOS 风格的无边框窗口，中文，单文件 exe，**不需要安装 .NET 运行时**（用系统自带的 .NET Framework 4.8）。
 
+> [!IMPORTANT]
+> **本项目的代码由 AI 编写，具体是 DeepSeek 的模型。** `src/` 下的 C# 源码、构建与安装脚本、
+> 本 README 与 `docs/` 均由 DeepSeek 模型生成；人类维护者提出需求、确定方向并验收发布。
+> 使用前建议自己读一遍代码 —— 详见 [AI 声明](#ai-声明)。
+
 <p align="center">
   <img src="screenshots/02-running.png" width="380" alt="运行中">
   &nbsp;&nbsp;
@@ -171,6 +176,17 @@ bingchuan-tinglan/
 - 每路输出共用同一个采样率/声道数（取自采集端），不做逐路重采样
 - 未做代码签名：首次运行时 SmartScreen 会提示「更多信息 → 仍要运行」
 
+## AI 声明
+
+**本项目的代码由 AI 编写，具体是 DeepSeek 的模型。**
+
+- `src/` 下的全部 C# 源码、`build.ps1` 与 `packaging/` 下的构建/安装脚本、本 README 与 `docs/`，
+  均由 **DeepSeek 模型**（通过 AI 编程助手会话）生成。人类维护者提出需求、确定方向并验收发布。
+- 逻辑、注释与设计说明同样出自 AI，可能与代码的实际行为有出入 —— 有疑问时以代码为准。
+- 请在用于任何重要场景前自行通读并测试。发现 bug 欢迎提 issue。
+
+这条声明是刻意写在这里的，不是免责套话：用之前你应该知道自己在用什么。
+
 ## 第三方
 
 - [NAudio](https://github.com/naudio/NAudio) 1.10.0 —— MIT License, © 2020 Mark Heath。
@@ -179,8 +195,12 @@ bingchuan-tinglan/
 
 ## 许可证
 
+Copyright (C) 2026 [Seruo-1109](https://github.com/Seruo-1109)
+
 [GPL-3.0](LICENSE)。简单说：你可以自由使用、修改、分发，包括商用；
 但**如果你分发修改后的版本，必须同样以 GPL-3.0 开源**。
+
+许可证全文见 [LICENSE](LICENSE)（GNU 官方原文，未作改动）。
 
 ## 致谢
 

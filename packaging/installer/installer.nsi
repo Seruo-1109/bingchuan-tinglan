@@ -113,8 +113,8 @@ VIAddVersionKey /LANG=2052 "ProductName"     "${PRODUCT_DESC}"
 VIAddVersionKey /LANG=2052 "FileDescription" "${PRODUCT_DESC} 安装程序"
 VIAddVersionKey /LANG=2052 "FileVersion"     "${VER4}"
 VIAddVersionKey /LANG=2052 "ProductVersion"  "${VER4}"
-VIAddVersionKey /LANG=2052 "CompanyName"     "并川听澜"
-VIAddVersionKey /LANG=2052 "LegalCopyright"  "© 2026 并川听澜"
+VIAddVersionKey /LANG=2052 "CompanyName"     "Seruo-1109"
+VIAddVersionKey /LANG=2052 "LegalCopyright"  "© 2026 Seruo-1109"
 VIAddVersionKey /LANG=2052 "Comments"        "一键安装包：内置主程序与 NAudio 运行库"
 
 ; ============================================================================

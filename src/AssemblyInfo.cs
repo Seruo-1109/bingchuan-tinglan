@@ -17,8 +17,8 @@ using System.Reflection;
 [assembly: AssemblyTitle("并川听澜")]
 [assembly: AssemblyDescription("把声音同时送到多个输出设备")]
 [assembly: AssemblyProduct("并川听澜")]
-[assembly: AssemblyCompany("并川听澜")]
-[assembly: AssemblyCopyright("© 2026 并川听澜")]
+[assembly: AssemblyCompany("Seruo-1109")]
+[assembly: AssemblyCopyright("© 2026 Seruo-1109")]
 [assembly: AssemblyTrademark("")]
 
 // 四段式：Windows 版本资源只认 X.X.X.X，写 1.2 会被静默当成 1.2.0.0 但界面显示不一致。
