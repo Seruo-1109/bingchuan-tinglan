@@ -57,12 +57,20 @@ jobs:
           .\packaging\build.ps1 -Version $ver -SkipCompile
 
       - name: 冒烟测试
-        shell: powershell
+        shell: pwsh
         run: |
           # 只跑不碰音频设备的自检入口，验证 exe 能正常加载依赖并写出报告。
+          #
+          # 注意：这一步必须用 pwsh（PowerShell 7）而不是 powershell（5.1）。
+          # 5.1 读取「无 BOM 的 UTF-8」工作流片段时会按系统 ANSI 码页解码，
+          # 于是 exe 名里的中文变成乱码（'å¹¶å·...'），Start-Process 找不到文件。
+          # 仓库里 .ps1 一律带 BOM，但工作流片段由 Actions 在运行时落盘，无法控制 BOM。
+          $exe = Get-ChildItem -Path '.\build' -Filter '*.exe' | Select-Object -First 1
+          if (-not $exe) { throw 'build\ 下没有找到 exe' }
+          Write-Host "冒烟测试目标：$($exe.FullName)"
           $out = Join-Path $env:RUNNER_TEMP 'selftest'
           New-Item -ItemType Directory -Force -Path $out | Out-Null
-          $p = Start-Process -FilePath '.\build\并川听澜.exe' -ArgumentList @('--selftest', $out) -Wait -PassThru
+          $p = Start-Process -FilePath $exe.FullName -ArgumentList @('--selftest', $out) -Wait -PassThru
           Get-ChildItem $out -ErrorAction SilentlyContinue | ForEach-Object { Write-Host "== $($_.Name)"; Get-Content $_.FullName }
           if ($p.ExitCode -ne 0) { throw "selftest 退出码 $($p.ExitCode)" }
 
@@ -71,7 +79,7 @@ jobs:
         with:
           name: bingchuan-tinglan-${{ github.sha }}
           path: |
-            build/并川听澜.exe
+            build/*.exe
             build/NAudio.dll
             packaging/dist/*.exe
             packaging/dist/*.sha256
