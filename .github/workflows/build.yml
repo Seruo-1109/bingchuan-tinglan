@@ -93,7 +93,10 @@ jobs:
         run: |
           # gh 在 windows-latest 上预装；tag 推送后自动建 Release 并上传。
           $tag = $env:GITHUB_REF -replace '^refs/tags/',''
-          $files = Get-ChildItem packaging\dist -Include *.exe,*.sha256 -File
+          # 注意：Get-ChildItem -Include 在没写 -Recurse 且路径不带通配符时什么都匹配不到，
+          # 必须写成 packaging\dist\* 再配 -Include，否则 $files 为空、Release 建出来是空的。
+          $files = Get-ChildItem -Path 'packaging\dist\*' -Include *.exe,*.sha256 -File
+          if (-not $files) { throw 'packaging\dist 下没有产物，无法发布' }
           if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
             Write-Host "未找到 gh，跳过自动发布；请在网页上手动创建 Release"
             exit 0
