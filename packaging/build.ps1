@@ -95,7 +95,8 @@ $srcDll = Join-Path $ProjectRoot 'build\NAudio.dll'
 $srcIco = Join-Path $ProjectRoot 'app.ico'
 
 # 首次 clone 后 build\ 还不存在：先跑一次根目录的 build.ps1 编译。
-if (-not (Test-Path $srcExe)) {
+# -SkipCompile 用来跳过这一步（CI 里主程序已经单独编好了）。
+if (-not (Test-Path $srcExe) -and -not $SkipCompile) {
     $rootBuild = Join-Path $ProjectRoot 'build.ps1'
     if (Test-Path $rootBuild) {
         Info "build\ 不存在，先运行 $rootBuild"
@@ -170,19 +171,17 @@ while ($vParts.Count -lt 4) { $vParts += '0' }
 $ver4 = ($vParts[0..3]) -join '.'
 Info "版本号 $Version → 四段 $ver4"
 
-if ($SkipCompile) {
-    Info '按 -SkipCompile 跳过编译'
-} else {
-    Push-Location $Installer
-    try {
-        $log = & $Makensis ("/V2", "/DVER=$Version", "/DVER4=$ver4", "installer.nsi") 2>&1
-        $log | ForEach-Object { Info $_ }
-        if ($LASTEXITCODE -ne 0) {
-            throw "makensis 失败，退出码 $LASTEXITCODE。请查看上方日志。"
-        }
-    } finally {
-        Pop-Location
+# 注意：-SkipCompile 只跳过「主程序编译」（即 build\ 不存在时自动调根目录 build.ps1），
+# 不跳过这里的安装包编译 —— 否则脚本会在没有产物的情况下直接断言失败。
+Push-Location $Installer
+try {
+    $log = & $Makensis ("/V2", "/DVER=$Version", "/DVER4=$ver4", "installer.nsi") 2>&1
+    $log | ForEach-Object { Info $_ }
+    if ($LASTEXITCODE -ne 0) {
+        throw "makensis 失败，退出码 $LASTEXITCODE。请查看上方日志。"
     }
+} finally {
+    Pop-Location
 }
 
 if (-not (Test-Path $outFile)) { throw "未生成安装包：$outFile" }
