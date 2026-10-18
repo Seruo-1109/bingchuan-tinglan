@@ -60,8 +60,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File packaging\build.ps1
 产物：
 
 ```
-packaging\dist\并川听澜-1.2-Setup.exe
-packaging\dist\并川听澜-1.2-Setup.exe.sha256
+packaging\dist\BingchuanTinglan-1.2-Setup.exe
+packaging\dist\BingchuanTinglan-1.2-Setup.exe.sha256
 ```
 
 `makensis` 的查找顺序：`packaging\_tools\nsis-3.11\makensis.exe` → `PATH` → `C:\Program Files (x86)\NSIS`。

@@ -6,8 +6,8 @@
 #      powershell -NoProfile -ExecutionPolicy Bypass -File build.ps1 -SkipCompile
 #
 #  产物：
-#      dist\并川听澜-1.2-Setup.exe      ← 交付物（单文件安装包）
-#      dist\并川听澜-1.2-Setup.exe.sha256
+#      dist\BingchuanTinglan-1.2-Setup.exe      ← 交付物（单文件安装包）
+#      dist\BingchuanTinglan-1.2-Setup.exe.sha256
 #
 #  流程：
 #      1. 从项目 build\ 取 payload（exe + NAudio.dll + app.ico）
@@ -161,7 +161,7 @@ Ok "已生成 installer\payload-fingerprint.nsh"
 Step '编译安装包'
 
 New-Item -ItemType Directory -Force -Path $Dist | Out-Null
-$outFile = Join-Path $Dist "并川听澜-$Version-Setup.exe"
+$outFile = Join-Path $Dist "BingchuanTinglan-$Version-Setup.exe"
 if (Test-Path $outFile) { Remove-Item $outFile -Force }
 
 # VIProductVersion 强制要求四段 X.X.X.X，而 -Version 通常写两段（1.2）。

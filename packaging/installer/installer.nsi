@@ -96,7 +96,10 @@ XPStyle on
 
 ; ── 安装器元信息（右键属性里能看到）────────────────────────────────────────
 Name "${PRODUCT_DESC} ${PRODUCT_VERSION}"
-OutFile "..\dist\并川听澜-${PRODUCT_VERSION}-Setup.exe"
+; 文件名用 ASCII：GitHub Releases 会静默剥掉附件名里的非 ASCII 字符，
+; 中文名「并川听澜-1.2-Setup.exe」上传后变成「-1.2-Setup.exe」。
+; 安装后在开始菜单 / 控制面板里显示的仍然是中文名 ${PRODUCT_DESC}。
+OutFile "..\dist\BingchuanTinglan-${PRODUCT_VERSION}-Setup.exe"
 InstallDir "${INSTALL_DIR}"
 InstallDirRegKey HKLM "${PRODUCT_KEY}" "InstallLocation"
 ShowInstDetails show

@@ -53,7 +53,7 @@ Windows 自带的声音设置只能选一个默认播放设备；「立体声混
 
 ## 下载
 
-到 [Releases](../../releases) 下载 `并川听澜-x.y-Setup.exe`，双击安装即可。
+到 [Releases](../../releases) 下载 `BingchuanTinglan-x.y-Setup.exe`，双击安装即可。
 
 - 安装包自带 UAC manifest，双击会请求管理员权限（安装到 `Program Files\MultiAudioOutput`）
 - 安装器会在写入后逐字节校验 payload（SHA256 + 字节数），装坏了会当场报错而不是装出一个跑不起来的程序
@@ -87,7 +87,7 @@ winget install NSIS.NSIS          # 或用 packaging\_tools\nsis-3.11\makensis.e
 powershell -NoProfile -ExecutionPolicy Bypass -File packaging\build.ps1
 ```
 
-产物：`packaging\dist\并川听澜-<版本>-Setup.exe` + `.sha256`。
+产物：`packaging\dist\BingchuanTinglan-<版本>-Setup.exe` + `.sha256`。
 
 安装包脚本会依次校验 PE 头、UAC manifest、嵌入图标、版本资源四段式，并断言安装包体积不小于
 payload 的压缩下限 —— 这一步能抓住「`File` 指令没生效、安装包装出来是空壳」这类事故。
